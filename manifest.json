@@ -1,0 +1,15 @@
+{
+    "name": "com.ubuntu.developer.anton.maminov.detransport",
+    "description": "Ubuntu Touch mobile version of the http://detransport.com.ua",
+    "architecture": "all",
+    "title": "Detransport Ternopil",
+    "hooks": {
+        "detransport": {
+            "apparmor": "detransport.apparmor",
+            "desktop": "detransport.desktop"
+        }
+    },
+    "version": "0.5",
+    "maintainer": "Anton Maminov <anton.maminov@gmail.com>",
+    "framework": "ubuntu-sdk-14.10"
+}
