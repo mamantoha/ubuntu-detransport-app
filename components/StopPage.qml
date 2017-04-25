@@ -1,33 +1,20 @@
-import QtQuick 2.0
-import Ubuntu.Components 1.1
-import Ubuntu.Components.ListItems 1.0 as ListItem
-import Ubuntu.Components.Popups 1.0
+import QtQuick 2.7
+import QtQuick.Controls 2.1
+
+//import Ubuntu.Components 1.1
+//import Ubuntu.Components.ListItems 1.0 as ListItem
+//import Ubuntu.Components.Popups 1.0
 
 Page {
     id: stopPage
     title: pageTitle
-    tools: stopPageToolbar
+    visible:true
 
-    ToolbarItems {
-        id: stopPageToolbar
-
-            ToolbarButton {
-              action: refreshVehiclesAction
-            }
-
-        ToolbarButton {
-            action: searchStopAction
-        }
-
-        ToolbarButton {
-            action: aboutAction
-        }
-    }
-
-    ActivityIndicator {
+    BusyIndicator {
         id: activity
         objectName: "ActivityIndicator"
         anchors.right: parent.right
+        running: false
         //running: stopsFetcher.status === ListModel.Loading
     }
 
@@ -38,11 +25,11 @@ Page {
             fill: parent
             margins: root.margins
         }
-        spacing: units.gu(1)
+        spacing: 1
 
         Row {
             id: stopSelectRow
-            spacing: units.gu(1)
+            spacing: 1
         }
 
         // Define a highlight with customized movement between items.
@@ -59,14 +46,14 @@ Page {
             }
         }
 
-        UbuntuListView {
+        ListView {
             id: vehiclesListView
             objectName: "vehiclesListView"
             width: parent.width
             height: pageLayout.height - stopSelectRow.height
             model: vehicleModel
             clip: true
-            focus: false
+            focus: true
 
             // Set the highlight delegate. Note we must also set highlightFollowsCurrentItem
             // to false so the highlight delegate can control how the highlight is moved.
@@ -75,11 +62,11 @@ Page {
 
             delegate: vehicleDelegate
 
-            pullToRefresh {
-                enabled: !!(currentStop >= 0)
-                onRefresh: model.refresh()
-                refreshing: model.refreshing
-            }
+//            pullToRefresh {
+//                enabled: !!(currentStop >= 0)
+//                onRefresh: model.refresh()
+//                refreshing: model.refreshing
+//            }
         }
     }
 }

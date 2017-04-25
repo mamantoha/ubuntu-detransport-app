@@ -1,25 +1,40 @@
-import QtQuick 2.0
-import Ubuntu.Components 1.1
-import Ubuntu.Components.ListItems 1.0 as ListItem
-import Ubuntu.Components.Popups 1.0
+//import QtQuick 2.0
+import QtQuick 2.6
+import QtQuick.Controls 1.4
+import QtQuick.Layouts 1.3
+
+//import Ubuntu.Components 1.1
+//import Ubuntu.Components.ListItems 1.0 as ListItem
+//import Ubuntu.Components.Popups 1.0
 import "components" as Components
 
-MainView {
+ApplicationWindow {
+    visible: true
+    width: 400
+    height: 600
+
+    toolBar:ToolBar {
+            RowLayout {
+                anchors.fill: parent
+                ToolButton {
+                    action: searchStopAction
+                }
+                ToolButton {
+                    action: aboutAction
+                }
+                Item { Layout.fillWidth: true }
+            }
+        }
+
     id: root
     // objectName for functional testing purposes (autopilot-qt5)
     objectName: "mainView"
-    applicationName: "com.ubuntu.developer.anton.maminov.detransport"
 
-    useDeprecatedToolbar: false
-    automaticOrientation: true
 
-    width: units.gu(50)
-    height: units.gu(90)
+    property string pageTitle: "Detransport"
 
-    property string pageTitle: i18n.tr("Detransport")
-
-    property real margins: units.gu(2)
-    property real buttonWidth: units.gu(20)
+    property real margins: 2
+    property real buttonWidth: 20
 
     property string source: "http://api.detransport.com.ua"
     property int currentStop: -1
@@ -51,7 +66,7 @@ MainView {
         id: refreshVehiclesAction
         objectName: "VehiclesRefreshButton"
         iconName: "reload"
-        text: i18n.tr("Refresh")
+        text: "Refresh"
         enabled: !!(currentStop >= 0)
         onTriggered: {
             vehicleModel.refresh()
@@ -62,7 +77,7 @@ MainView {
         id: refreshStopsAction
         objectName: "StopsRefreshButton"
         iconName: "reload"
-        text: i18n.tr("Refresh")
+        text: "Refresh"
         onTriggered: {
             loadStops()
         }
@@ -72,7 +87,7 @@ MainView {
         id: searchStopAction
         objectName: "SearchStopButton"
         iconName: "search"
-        text: i18n.tr("Search Stop")
+        text: "Search Stop"
         onTriggered: {
             pageStack.push(addStopPage)
         }
@@ -82,7 +97,7 @@ MainView {
         id: aboutAction
         objectName: 'AboutButton'
         iconName: 'info'
-        text: i18n.tr('About')
+        text: 'About'
         onTriggered: {
             pageStack.push(aboutPage)
         }
@@ -98,22 +113,17 @@ MainView {
                 left: parent.left
                 right: parent.right
             }
-            height: units.gu(14)
+            height: 140
 
             Item {
                 id: listItem
 
                 anchors {
                     fill: parent
-                    leftMargin: units.gu(2)
-                    rightMargin: units.gu(2)
-                    topMargin: units.gu(1)
-                    bottomMargin: units.gu(1)
-                }
-
-                // used as footer for list
-                ListItem.ThinDivider {
-                    anchors.bottom: parent.bottom
+                    leftMargin: 20
+                    rightMargin: 20
+                    topMargin: 10
+                    bottomMargin: 10
                 }
 
                 Item {
@@ -125,7 +135,7 @@ MainView {
                     Image {
                         anchors.centerIn: parent
                         source: selectIcon()
-                        width: units.gu(8)
+                        width: 80
                         height: width
                         sourceSize.width: width
                         sourceSize.height: width
@@ -154,9 +164,8 @@ MainView {
                     Label {
                         id: labelName
                         anchors.centerIn: parent
-                        anchors.verticalCenterOffset: -units.gu(1)
+                        anchors.verticalCenterOffset: -1
                         text: name
-                        fontSize: "normal"
                         font.weight: Font.DemiBold
                     }
                 }
@@ -165,15 +174,15 @@ MainView {
                     id: content
 
                     anchors {
-                        fill: parent; topMargin: units.gu(1.5); bottomMargin: units.gu(1.5);
-                        leftMargin: listItem.height + units.gu(0.5); rightMargin: units.gu(1.5)
+                        fill: parent; topMargin: 15; bottomMargin: 15;
+                        leftMargin: listItem.height + 5; rightMargin: 15
                     }
-                    spacing: units.gu(1)
+                    spacing: 1
 
                     Label {
                         id: labelTime
                         objectName: "LabelTime"
-                        text: i18n.tr("%1 minutes").arg(secondsToMinutes(time))
+                        text: "%1 minutes".arg(secondsToMinutes(time))
                         anchors {
                             left: parent.left
                             right: parent.right
@@ -184,7 +193,7 @@ MainView {
                     Label {
                         id: labelDistance
                         objectName: "LabelDistance"
-                        text: i18n.tr("%1 meters").arg(distance)
+                        text: "%1 meters".arg(distance)
                         anchors {
                             left: parent.left
                             right: parent.right
@@ -195,8 +204,7 @@ MainView {
                     Label {
                         id: labelNext
                         objectName: "LabelNext"
-                        text: i18n.tr("Next in %1 minutes / %2 meters").arg(secondsToMinutes(timenext)).arg(distancenext)
-                        fontSize: "x-small"
+                        text: "Next in %1 minutes / %2 meters".arg(secondsToMinutes(timenext)).arg(distancenext)
                         //wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                         anchors {
                             left: parent.left
@@ -225,6 +233,7 @@ MainView {
 
     Component.onCompleted: {
         loadStops()
+
         if (currentStop > 0) {
             pageStack.push(stopPage)
         } else {
@@ -279,14 +288,16 @@ MainView {
                 var list = JSON.parse(xhr.responseText)['vehicles'];
                 vehicleModel.clear();
 
+                console.log(list)
                 for (var i in list.sort(sortByTime)) {
+                    console.log(list[i].timenext)
                     vehicleModel.append({
                                             "id": list[i].id,
                                             "name": list[i].name,
                                             "time": list[i].time,
                                             "distance": list[i].distance,
-                                            "timenext": list[i].timenext,
-                                            "distancenext": list[i].distancenext,
+                                            "timenext": list[i].timenext || 9999999999,
+                                            "distancenext": list[i].distancenext || "Unknown",
                                             "vehicletype": list[i].type.toString()
                                         });
                 }
@@ -314,8 +325,11 @@ MainView {
         return ret
     }
 
-    PageStack {
+    StackView {
         id: pageStack
+        anchors.fill: parent
+        // Implements back key navigation
+        focus: true
 
         Components.StopPage {
             id: stopPage

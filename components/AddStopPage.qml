@@ -1,35 +1,23 @@
+import QtQuick 2.7
 import QtQuick 2.0
-import Ubuntu.Components 1.1
-import Ubuntu.Components.ListItems 1.0 as ListItem
-import Ubuntu.Components.Popups 1.0
+import QtQuick.Controls 2.1
+import QtQuick.Controls 1.4
+import QtQuick.Controls.Styles 1.4
 
 Page {
     id: addStopPage
     objectName: "AddStopPage"
-    title: i18n.tr("Select stop")
+    title: "Select stop"
     anchors.fill: parent
-    visible: false
-    tools: addStopPageToolbar
+    visible: true
 
-    ToolbarItems {
-        id: addStopPageToolbar
-
-        ToolbarButton {
-            action: refreshStopsAction
-        }
-
-        ToolbarButton {
-            action: aboutAction
-        }
-    }
-
-    readonly property real headerHeight: units.gu(9.5)
-    readonly property real bottomHeight: units.gu(9.5)
+    readonly property real headerHeight: 9.5
+    readonly property real bottomHeight: 9.5
 
     function clear() {
         locationString.text = ''
         vehicleModel.clear()
-        //searching.running = false
+        searching.running = false
     }
 
     function doSearch() {
@@ -44,8 +32,8 @@ Page {
                     filterStopModel.append(stopModel.get(i))
                 }
             }
-            //searching.running = true
-            //searching.running = false
+            searching.running = true
+            searching.running = false
         } else {
             for (var i = 0; i < stopModel.count; i++) {
                 filterStopModel.append(stopModel.get(i))
@@ -60,8 +48,8 @@ Page {
         Item {
             anchors {
                 top: parent.top
-                topMargin: headerHeight + units.gu(1)
-                margins: units.gu(2)
+                topMargin: headerHeight + 1
+                margins: 2
                 right: parent.right
                 left: parent.left
                 bottom: parent.bottom
@@ -70,40 +58,39 @@ Page {
 
             Rectangle {
                 id: searchInput
-                height: units.gu(5)
+                height: 30
                 anchors {
                     right: parent.right
-                    rightMargin: units.gu(1)
+                    rightMargin: 1
                     left: parent.left
-                    leftMargin: units.gu(1)
+                    leftMargin: 1
                 }
                 color: 'transparent'
+
 
                 TextField {
                     id: locationString
                     objectName: 'SearchField'
                     anchors.fill: parent
 
-                    placeholderText: i18n.tr('Search...')
-                    hasClearButton: true
+                    placeholderText: 'Search...'
                     inputMethodHints: Qt.ImhNoPredictiveText
 
                     onAccepted: {
+                        console.log('search')
                         doSearch();
                         search_timer.stop()
                         locationString.focus = false
                     }
 
-                    primaryItem: Image {
-                        id: locationImage
-                        height: parent.height * 0.5
-                        width: height
-                        anchors {
-                            verticalCenter: parent.verticalCenter
-                            verticalCenterOffset: -units.gu(0.1)
+                    style: TextFieldStyle {
+                        textColor: "black"
+                        background: Rectangle {
+                            radius: 20
+                            border.width: 1
                         }
-                        source: Qt.resolvedUrl("image://theme/search")
                     }
+
                     Timer {
                         id: search_timer
                         interval: 1000
@@ -120,14 +107,12 @@ Page {
                     }
                 } //TextField
 
-                ActivityIndicator {
+                BusyIndicator {
                     id: searching
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
                     objectName: "SearchingSpinner"
-                    anchors {
-                        right: locationString.right
-                        rightMargin: units.gu(2)
-                        verticalCenter: locationString.verticalCenter
-                    }
+                    running: false
                 }
             }
 
@@ -137,38 +122,63 @@ Page {
                     top: searchInput.bottom
                     left: parent.left
                     right: parent.right
-                    topMargin: units.gu(2)
+                    topMargin: 20
                 }
-                height: addStopPage.height - searchInput.height - units.gu(9.5)
+                height: addStopPage.height - searchInput.height - 9.5
                 color: 'transparent'
                 visible: true
+
                 ListView {
                     id: listView
+                    anchors.rightMargin: 0
+                    anchors.bottomMargin: 18
+                    anchors.leftMargin: 0
+                    anchors.topMargin: -18
                     objectName: "SearchResultList"
                     clip: true
                     anchors.fill: parent
                     model: filterStopModel
 
-                    delegate: ListItem.Subtitled {
-                        text: name
-                        //iconName: "empty"
-                        progression: true
+                    delegate:Component {
+                        Item {
+                            id: container
+                            width: ListView.view.width; height: 60; anchors.leftMargin: 10; anchors.rightMargin: 10
 
-                        onClicked: {
-                            currentStop = id
-                            pageTitle = name
-                            loadVehicles(id)
+                            Rectangle {
+                                id: content
+                                anchors.centerIn: parent; width: container.width - 40; height: container.height - 10
+                                color: "transparent"
+                                antialiasing: true
+                                radius: 10
 
-                            pageStack.clear()
-                            pageStack.push(stopPage)
+                                Rectangle { anchors.fill: parent; anchors.margins: 3; color: "#91AA9D"; antialiasing: true; radius: 8 }
+                            }
 
-                            clear()
+                            Text {
+                                id: label
+                                anchors.centerIn: content
+                                text: name
+                                color: "#193441"
+                                font.pixelSize: 14
+                            }
+
+                            MouseArea {
+                                id: mouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+
+                                onClicked: {
+                                    currentStop = id
+                                    pageTitle = name
+                                    loadVehicles(id)
+
+                                    pageStack.clear()
+                                    pageStack.push(stopPage)
+
+                                    clear()
+                                }
+                            }
                         }
-                    }
-
-                    Scrollbar {
-                        flickableItem: listView
-                        align: Qt.AlignTrailing
                     }
                 }
             }

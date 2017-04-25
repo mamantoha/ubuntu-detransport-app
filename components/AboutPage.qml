@@ -1,13 +1,17 @@
 import QtQuick 2.0
-import Ubuntu.Components 1.1
+import QtQuick.Controls 2.1
+import QtQuick.Particles 2.0
 
 Page {
     id: aboutPage
-    title: i18n.tr("About")
-    visible:false
+    transformOrigin: Item.Center
+    title: "About"
+    visible:true
+    anchors.fill: parent
 
     Flickable {
         id: flickable
+        anchors.rightMargin: 0
         anchors.fill: parent
         clip: true
 
@@ -15,42 +19,37 @@ Page {
 
         Column {
             id: aboutColumn
-            spacing: units.gu(2)
+            spacing: 2
             width: parent.width
-            property real marginTop: units.gu(3)
+            property real marginTop: 3
             y: marginTop
 
             Label {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: i18n.tr("<b>Detransport Ternopil</b>")
-                fontSize: "x-large"
+                font.pixelSize: 22
+                text: "<b>Detransport Ternopil</b>"
             }
 
-            UbuntuShape {
-                property real maxWidth: units.gu(45)
+            Image {
                 anchors.horizontalCenter: parent.horizontalCenter
-                width: Math.min(parent.width, maxWidth)/2
-                height: Math.min(parent.width, maxWidth)/2
-                image: Image {
-                    source: "../detransport.png"
-                }
+                source: "../detransport.png"
             }
 
             Label {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: i18n.tr("<b>About:</b>")
+                text: "<b>About:</b>"
             }
 
             Label {
                 anchors.horizontalCenter: parent.horizontalCenter
                 horizontalAlignment: Text.AlignHCenter
-                text: "Ubuntu Touch mobile version of the <br/><a href=\"http://detransport.com.ua\">http://detransport.com.ua</a> site"
+                text: "QML version of the <br/><a href=\"http://detransport.com.ua\">http://detransport.com.ua</a> site"
                 onLinkActivated: Qt.openUrlExternally(link)
             }
 
             Label {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: i18n.tr("<b>Author:</b>")
+                text: "<b>Author:</b>"
             }
 
             Label {
@@ -62,24 +61,24 @@ Page {
 
             Label {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: i18n.tr("<b>Source code:</b>")
+                text: "<b>Source code:</b>"
             }
 
             Label {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: "<a href=\"https://launchpad.net/ubuntu-detransport-app\">ubuntu-detransport-app</a>"
+                text: "<a href=\"https://github.com/mamantoha/ubuntu-detransport-app\">Gihub</a>"
                 onLinkActivated: Qt.openUrlExternally(link)
             }
 
             Label {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: i18n.tr("Version: <b>0.5</b>")
+                text: "Version: <b>0.6</b>"
             }
 
             Label {
                 anchors.horizontalCenter: parent.horizontalCenter
                 font.bold: true
-                text: "2014"
+                text: "2014-2017"
             }
         }
     }
